@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ESI adaptación Odoo 18: la pantalla de Ajustes usa app/block/setting. -->
+    <record id="res_config_settings_view_form_esi_product_v18" model="ir.ui.view">
+        <field name="name">res.config.settings.form.esi.product.v18</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='general_settings']" position="inside">
+                <block title="Campos adicionales de producto ESI" id="esi_product_fields_settings" groups="base.group_no_one">
+                    <setting string="Nombre del campo adicional 1" help="Cambia únicamente el nombre mostrado del campo; el nombre técnico permanece igual.">
+                        <field name="esi_product_field_1_label"/>
+                    </setting>
+                    <setting string="Nombre del campo adicional 2">
+                        <field name="esi_product_field_2_label"/>
+                    </setting>
+                    <setting string="Nombre del campo adicional 3">
+                        <field name="esi_product_field_3_label"/>
+                    </setting>
+                    <setting string="Nombre del campo adicional 4">
+                        <field name="esi_product_field_4_label"/>
+                    </setting>
+                    <setting string="Nombre del campo adicional 5" help="Después de guardar, recargue la vista de producto para ver los nuevos nombres.">
+                        <field name="esi_product_field_5_label"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

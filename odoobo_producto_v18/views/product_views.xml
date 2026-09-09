@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ESI adaptación Odoo 18: Odoo 18 usa <list> en lugar de <tree>. -->
+
+    <record id="product_template_form_esi_fields_v18" model="ir.ui.view">
+        <field name="name">product.template.form.esi.fields.v18</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Datos adicionales ESI" name="esi_additional_fields">
+                    <group>
+                        <group>
+                            <field name="esi_extra_field_1"/>
+                            <field name="esi_extra_field_2"/>
+                            <field name="esi_extra_field_3"/>
+                        </group>
+                        <group>
+                            <field name="esi_extra_field_4"/>
+                            <field name="esi_extra_field_5"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_product_form_esi_fields_v18" model="ir.ui.view">
+        <field name="name">product.product.form.esi.fields.v18</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Datos adicionales ESI" name="esi_additional_fields_variant">
+                    <group>
+                        <group>
+                            <field name="esi_extra_field_1"/>
+                            <field name="esi_extra_field_2"/>
+                            <field name="esi_extra_field_3"/>
+                        </group>
+                        <group>
+                            <field name="esi_extra_field_4"/>
+                            <field name="esi_extra_field_5"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ESI: formulario "ver más" / edición rápida de variante. -->
+    <record id="product_variant_easy_form_esi_fields_v18" model="ir.ui.view">
+        <field name="name">product.product.easy.form.esi.fields.v18</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='pricing']" position="after">
+                <group string="Datos adicionales ESI" name="esi_additional_fields_easy">
+                    <field name="esi_extra_field_1"/>
+                    <field name="esi_extra_field_2"/>
+                    <field name="esi_extra_field_3"/>
+                    <field name="esi_extra_field_4"/>
+                    <field name="esi_extra_field_5"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ESI: columnas opcionales en lista de plantillas. -->
+    <record id="product_template_list_esi_fields_v18" model="ir.ui.view">
+        <field name="name">product.template.list.esi.fields.v18</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="esi_extra_field_1" optional="hide"/>
+                <field name="esi_extra_field_2" optional="hide"/>
+                <field name="esi_extra_field_3" optional="hide"/>
+                <field name="esi_extra_field_4" optional="hide"/>
+                <field name="esi_extra_field_5" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ESI: columnas opcionales en lista de variantes. -->
+    <record id="product_product_list_esi_fields_v18" model="ir.ui.view">
+        <field name="name">product.product.list.esi.fields.v18</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="esi_extra_field_1" optional="hide"/>
+                <field name="esi_extra_field_2" optional="hide"/>
+                <field name="esi_extra_field_3" optional="hide"/>
+                <field name="esi_extra_field_4" optional="hide"/>
+                <field name="esi_extra_field_5" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ESI: la búsqueda de product.product hereda la búsqueda de product.template,
+         por eso basta extender la vista base una sola vez. -->
+    <record id="product_template_search_esi_fields_v18" model="ir.ui.view">
+        <field name="name">product.template.search.esi.fields.v18</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="esi_extra_field_1"/>
+                <field name="esi_extra_field_2"/>
+                <field name="esi_extra_field_3"/>
+                <field name="esi_extra_field_4"/>
+                <field name="esi_extra_field_5"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ESI Odoo 18: ir.actions.report usa group_ids. -->
+    <record id="paperformat_esi_remision_v18" model="report.paperformat">
+        <field name="name">ESI Remisiones Carta Odoo 18</field>
+        <field name="default" eval="False"/>
+        <field name="format">Letter</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">6</field>
+        <field name="margin_bottom">7</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_nota_remision_v18" model="ir.actions.report">
+        <field name="name">Nota de Remisión</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">odoobo_remision_v18.report_nota_remision</field>
+        <field name="report_file">odoobo_remision_v18.report_nota_remision</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
+        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+        <field name="print_report_name">'Nota de Remisión - %s' % (object.name)</field>
+    </record>
+
+    <record id="action_entrega_consignacion_v18" model="ir.actions.report">
+        <field name="name">Entrega de Consignación</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">odoobo_remision_v18.report_entrega_consignacion</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
+        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+    </record>
+
+    <record id="action_entrega_materiales_v18" model="ir.actions.report">
+        <field name="name">Entrega de Materiales</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">odoobo_remision_v18.report_entrega_materiales</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
+        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+    </record>
+
+    <record id="action_recepcion_consignacion_v18" model="ir.actions.report">
+        <field name="name">Recepción de Consignación</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">odoobo_remision_v18.report_recepcion_consignacion</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
+        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+    </record>
+
+    <record id="action_devolucion_proveedores_v18" model="ir.actions.report">
+        <field name="name">Devolución de Proveedores</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">odoobo_remision_v18.report_devolucion_proveedores</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
+        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+    </record>
+
+    <record id="action_devolucion_librerias_v18" model="ir.actions.report">
+        <field name="name">Devolución de Librerías</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">odoobo_remision_v18.report_devolucion_librerias</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
+        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+    </record>
+</odoo>
