@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="sequence_account_pro" model="ir.sequence">
+        <field name="name">Odoobo - Cuenta PRO</field>
+        <field name="code">odoobo.reg.pro.account.pro</field>
+        <field name="prefix">PRO</field>
+        <field name="padding">6</field>
+    </record>
+    <record id="sequence_account_reg" model="ir.sequence">
+        <field name="name">Odoobo - Cuenta REG</field>
+        <field name="code">odoobo.reg.pro.account.reg</field>
+        <field name="prefix">REG</field>
+        <field name="padding">6</field>
+    </record>
+    <record id="sequence_account_coe_pro" model="ir.sequence">
+        <field name="name">Odoobo - Cuenta COE PRO</field>
+        <field name="code">odoobo.reg.pro.account.coe.pro</field>
+        <field name="prefix">COE</field>
+        <field name="padding">6</field>
+    </record>
+    <record id="sequence_account_coe_reg" model="ir.sequence">
+        <field name="name">Odoobo - Cuenta COE REG</field>
+        <field name="code">odoobo.reg.pro.account.coe.reg</field>
+        <field name="prefix">CRG</field>
+        <field name="padding">6</field>
+    </record>
+</odoo>

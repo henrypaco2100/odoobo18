@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_odoobo_pro_reg_coe" model="ir.ui.view">
+        <field name="name">res.partner.form.odoobo.pro.reg.coe</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="sd_es_autor" groups="account.group_account_manager"/>
+            </xpath>
+
+            <xpath expr="//page[@name='accounting']" position="inside">
+                <group string="Odoobo - Autor / PRO / REG / COE"
+                       name="odoobo_author_accounts"
+                       groups="account.group_account_manager"
+                       invisible="not sd_es_autor">
+                    <group string="PRO / REG">
+                        <field name="sd_cuenta_pro" options="{'no_create': True}"/>
+                        <field name="sd_cuenta_reg" options="{'no_create': True}"/>
+                        <button name="action_create_accounts_pro_reg"
+                                type="object"
+                                string="Crear cuentas PRO y REG"
+                                class="btn-primary"
+                                invisible="sd_cuenta_pro and sd_cuenta_reg"/>
+                    </group>
+                    <group string="COE PRO / COE REG">
+                        <field name="sd_porcentaje_cuenta_coe" placeholder="Ej.: 36"/>
+                        <field name="sd_cuenta_coe" options="{'no_create': True}"/>
+                        <field name="sd_cuenta_coe_reg" options="{'no_create': True}"/>
+                        <button name="action_create_accounts_coe"
+                                type="object"
+                                string="Crear cuentas COE PRO y COE REG"
+                                class="btn-secondary"
+                                invisible="sd_cuenta_coe and sd_cuenta_coe_reg"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

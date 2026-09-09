@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Datos editoriales en la vista común: se heredan también en product.product. -->
+    <record id="product_template_form_odoobo_editorial" model="ir.ui.view">
+        <field name="name">product.template.form.odoobo.editorial</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page string="Datos Editoriales" name="odoobo_editorial_data">
+                    <group>
+                        <group string="Publicación">
+                            <field name="sd_autor_id" domain="[('sd_es_autor', '=', True)]" options="{'no_create': True}"/>
+                            <field name="sd_autor" readonly="1"/>
+                            <field name="sd_tematica"/>
+                            <field name="sd_coleccion"/>
+                            <field name="sd_gestion_publicacion"/>
+                            <field name="sd_edicion"/>
+                            <field name="sd_deposito_legal"/>
+                            <field name="sd_codigo_interno"/>
+                            <field name="sd_libro_lcv"/>
+                        </group>
+                        <group string="Características editoriales">
+                            <field name="sd_paginas"/>
+                            <field name="sd_formato"/>
+                            <field name="sd_tipo_tapa"/>
+                            <field name="sd_precio_FOB_USD"/>
+                            <field name="sd_tiraje"/>
+                        </group>
+                    </group>
+                    <group string="Observaciones">
+                        <field name="sd_observaciones"/>
+                        <field name="sd_comentarios" string="Reseña"/>
+                        <field name="sd_informacion_adicional"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Configuración contable adaptada a la pestaña Accounting de Odoo 18. -->
+    <record id="product_template_form_odoobo_taxes" model="ir.ui.view">
+        <field name="name">product.template.form.odoobo.taxes</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="account.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='invoicing']/group[@name='accounting']" position="after">
+                <group string="Odoobo - PRO / REG / COE"
+                       name="odoobo_product_pro_reg_coe"
+                       groups="account.group_account_manager">
+                    <group string="PRO / REG">
+                        <field name="sd_pro_reg_enabled"/>
+                        <field name="sd_autor_id" domain="[('sd_es_autor', '=', True)]" options="{'no_create': True}"/>
+                        <field name="sd_cuenta_pro" readonly="1"/>
+                        <field name="sd_cuenta_reg" readonly="1"/>
+                        <field name="sd_tax_pro_id" readonly="1" options="{'no_create': True}" invisible="not sd_tax_pro_id"/>
+                        <field name="sd_tax_reg_id" readonly="1" options="{'no_create': True}" invisible="not sd_tax_reg_id"/>
+                    </group>
+                    <group string="COE PRO / COE REG">
+                        <field name="sd_coe_enabled"/>
+                        <field name="sd_cuenta_coe" readonly="1"/>
+                        <field name="sd_cuenta_coe_reg" readonly="1"/>
+                        <field name="sd_tax_coe_pro_id" readonly="1" options="{'no_create': True}" invisible="not sd_tax_coe_pro_id"/>
+                        <field name="sd_tax_coe_reg_id" readonly="1" options="{'no_create': True}" invisible="not sd_tax_coe_reg_id"/>
+                    </group>
+                    <group string="Cálculo">
+                        <field name="sd_tipo_importe" invisible="not sd_pro_reg_enabled and not sd_coe_enabled"/>
+                        <field name="sd_amount_impuesto" invisible="not sd_pro_reg_enabled and not sd_coe_enabled"/>
+                        <button name="action_sd_sync_pro_reg_taxes"
+                                type="object"
+                                string="Generar / Actualizar impuestos Odoobo"
+                                class="btn-primary"
+                                invisible="not sd_pro_reg_enabled and not sd_coe_enabled"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_list_odoobo_editorial" model="ir.ui.view">
+        <field name="name">product.template.list.odoobo.editorial</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="sd_codigo_interno" optional="show"/>
+                <field name="sd_autor_id" optional="show"/>
+                <field name="sd_tematica" optional="hide"/>
+                <field name="sd_coleccion" optional="hide"/>
+                <field name="sd_gestion_publicacion" optional="hide"/>
+                <field name="sd_edicion" optional="hide"/>
+                <field name="sd_deposito_legal" optional="hide"/>
+                <field name="sd_paginas" optional="hide"/>
+                <field name="sd_formato" optional="hide"/>
+                <field name="sd_tipo_tapa" optional="hide"/>
+                <field name="sd_tiraje" optional="hide"/>
+                <field name="sd_libro_lcv" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_product_list_odoobo_editorial" model="ir.ui.view">
+        <field name="name">product.product.list.odoobo.editorial</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="sd_codigo_interno" optional="show" readonly="1"/>
+                <field name="sd_autor_id" optional="show" readonly="1"/>
+                <field name="sd_tematica" optional="hide" readonly="1"/>
+                <field name="sd_coleccion" optional="hide" readonly="1"/>
+                <field name="sd_gestion_publicacion" optional="hide" readonly="1"/>
+                <field name="sd_deposito_legal" optional="hide" readonly="1"/>
+                <field name="sd_paginas" optional="hide" readonly="1"/>
+                <field name="sd_formato" optional="hide" readonly="1"/>
+                <field name="sd_tipo_tapa" optional="hide" readonly="1"/>
+                <field name="sd_libro_lcv" optional="hide" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_search_odoobo_editorial" model="ir.ui.view">
+        <field name="name">product.template.search.odoobo.editorial</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="sd_codigo_interno"/>
+                <field name="sd_autor_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_product_search_odoobo_editorial" model="ir.ui.view">
+        <field name="name">product.product.search.odoobo.editorial</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_search_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="sd_codigo_interno"/>
+                <field name="sd_autor_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

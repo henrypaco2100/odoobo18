@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_odoobo_report_by_author,odoobo.report.by.author,model_odoobo_report_by_author,base.group_user,1,1,1,1
