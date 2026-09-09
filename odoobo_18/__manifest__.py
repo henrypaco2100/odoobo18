@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "ESI - Comprobante Contable Odoo 18",
-    "version": "18.0.1.0.1",
+    "version": "18.0.1.0.2",
     "category": "Accounting/Accounting",
     "summary": "Comprobante contable con vista previa y PDF para Odoo 18",
     "description": """
@@ -21,6 +21,7 @@ Comprobante Contable ESI adaptado a Odoo 18 Community.
     "depends": ["account"],
     "data": [
         "views/account_move_views.xml",
+        "report/account_preview_compat.xml",
         "report/comprobante_report.xml",
         "report/comprobante_template.xml",
     ],

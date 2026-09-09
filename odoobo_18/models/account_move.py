@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from html import escape
+
+from markupsafe import Markup
 from odoo import _, fields, models
 from odoo.exceptions import UserError
 
@@ -9,6 +12,30 @@ class AccountMove(models.Model):
     esi_show_line_date = fields.Boolean(string="Mostrar fecha", default=False)
     esi_show_analytic = fields.Boolean(string="Mostrar analítica", default=True)
     esi_check_number = fields.Char(string="Nro. de cheque")
+
+    # ESI corrección Odoo 18: salida HTML/PDF robusta para textos con tildes/ñ.
+    # Además corrige textos que ya lleguen como mojibake (ej. "LÃ¡mpara").
+    def esi_report_text(self, value):
+        if value in (False, None):
+            return Markup("")
+        text = str(value)
+        markers = ("Ã", "Â", "â€", "â€™", "â€œ", "â€", "ð")
+        if any(marker in text for marker in markers):
+            original_score = sum(text.count(marker) for marker in markers)
+            for encoding in ("cp1252", "latin1"):
+                try:
+                    candidate = text.encode(encoding).decode("utf-8")
+                except (UnicodeEncodeError, UnicodeDecodeError):
+                    continue
+                candidate_score = sum(candidate.count(marker) for marker in markers)
+                if candidate_score < original_score:
+                    text = candidate
+                    break
+        # Convertimos caracteres no ASCII en entidades HTML numéricas.
+        # Así wkhtmltopdf/browser no puede reinterpretar UTF-8 como Windows-1252.
+        escaped = escape(text, quote=False)
+        ascii_html = escaped.encode("ascii", "xmlcharrefreplace").decode("ascii")
+        return Markup(ascii_html)
 
     def esi_report_filename(self):
         self.ensure_one()

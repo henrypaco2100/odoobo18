@@ -31,13 +31,13 @@
                          style="max-height:16mm; max-width:42mm; width:auto; height:auto;"/>
                 </td>
                 <td style="width:50%; vertical-align:top; text-align:right; border:0; padding:1mm 4mm 0 0; font-size:8pt; line-height:1.45;">
-                    <div style="font-weight:700; font-size:8.5pt;" t-esc="company.name or ''"/>
-                    <div t-if="company.vat"><strong>NIT: </strong><span t-esc="company.vat"/></div>
-                    <div t-if="company.phone"><strong>Tel: </strong><span t-esc="company.phone"/></div>
+                    <div style="font-weight:700; font-size:8.5pt;" t-out="o.esi_report_text(company.name or '')"/>
+                    <div t-if="company.vat"><strong>NIT: </strong><span t-out="o.esi_report_text(company.vat)"/></div>
+                    <div t-if="company.phone"><strong>Tel: </strong><span t-out="o.esi_report_text(company.phone)"/></div>
                     <div t-if="company.partner_id.city or company.partner_id.country_id">
-                        <span t-esc="company.partner_id.city or ''"/>
+                        <span t-out="o.esi_report_text(company.partner_id.city or '')"/>
                         <t t-if="company.partner_id.city and company.partner_id.country_id"> - </t>
-                        <span t-esc="company.partner_id.country_id.name or ''"/>
+                        <span t-out="o.esi_report_text(company.partner_id.country_id.name or '')"/>
                     </div>
                 </td>
             </tr>
@@ -49,7 +49,7 @@
             <t t-call="odoobo_remision_v18.esi_company_header"/>
 
             <div style="width:100%; text-align:center; margin:0 0 3.5mm 0;">
-                <span style="font-size:11.5pt; font-weight:400; text-decoration:underline;" t-esc="esi_title"/>
+                <span style="font-size:11.5pt; font-weight:400; text-decoration:underline;" t-out="o.esi_report_text(esi_title)"/>
             </div>
 
             <!-- ESI corrección: dos columnas mediante tabla fija para evitar que wkhtmltopdf las apile. -->
@@ -59,30 +59,31 @@
                 </colgroup>
                 <tr>
                     <td style="border:0; padding:0.35mm 0;">FECHA:</td>
-                    <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.esi_date_in_words()"/></td>
+                    <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.esi_date_in_words())"/></td>
                     <td style="border:0; padding:0.35mm 0;">WH_ORIGEN:</td>
-                    <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.location_id.display_name"/></td>
+                    <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.location_id.display_name)"/></td>
                 </tr>
                 <tr>
-                    <td style="border:0; padding:0.35mm 0;">SEÑORES:</td>
-                    <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.partner_id.name or ''"/></td>
+                    <td style="border:0; padding:0.35mm 0;"><t t-out="o.esi_report_text('SEÑORES:')"/></td>
+                    <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.partner_id.name or '')"/></td>
                     <td style="border:0; padding:0.35mm 0;">WH_DESTINO:</td>
-                    <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.location_dest_id.display_name"/></td>
+                    <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.location_dest_id.display_name)"/></td>
                 </tr>
                 <tr>
-                    <td style="border:0; padding:0.35mm 0;">NÚMERO:</td>
-                    <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.name"/></td>
+                    <td style="border:0; padding:0.35mm 0;"><t t-out="o.esi_report_text('NÚMERO:')"/></td>
+                    <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.name)"/></td>
                     <td style="border:0; padding:0.35mm 0;">PORCENTAJE:</td>
-                    <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.esi_percentage_label() or ''"/></td>
+                    <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.esi_percentage_label() or '')"/></td>
                 </tr>
             </table>
 
+            <!-- ESI corrección: textos con acentos se emiten como entidades HTML seguras para evitar mojibake. -->
             <!-- ESI corrección: IMPORTE TOTAL = CANTIDAD x PVP. COSTO se mantiene solo como dato unitario informativo. -->
             <table style="width:100% !important; max-width:none !important; margin:0; border-collapse:collapse; table-layout:fixed; font-size:7.4pt; line-height:1.25;">
                 <thead>
                     <tr style="text-align:center; background:#e6e9ed; font-weight:700;">
                         <th style="width:12%; border:0.45pt solid #444; padding:1.15mm 0.8mm;">CANTIDAD</th>
-                        <th style="border:0.45pt solid #444; padding:1.15mm 0.8mm;">TÍTULO</th>
+                        <th style="border:0.45pt solid #444; padding:1.15mm 0.8mm;"><t t-out="o.esi_report_text('TÍTULO')"/></th>
                         <th style="width:14%; border:0.45pt solid #444; padding:1.15mm 0.8mm;">PVP</th>
                         <th t-if="esi_show_cost" style="width:14%; border:0.45pt solid #444; padding:1.15mm 0.8mm;">COSTO</th>
                         <th t-if="esi_show_cost" style="width:16%; border:0.45pt solid #444; padding:1.15mm 0.8mm;">IMPORTE TOTAL</th>
@@ -91,7 +92,7 @@
                 <tbody>
                     <tr t-foreach="o.esi_report_moves()" t-as="line">
                         <td style="border:0.45pt solid #444; padding:1mm 0.8mm; text-align:center;" t-esc="o.esi_move_quantity(line)"/>
-                        <td style="border:0.45pt solid #444; padding:1mm 0.8mm; word-wrap:break-word;" t-esc="line.product_id.display_name"/>
+                        <td style="border:0.45pt solid #444; padding:1mm 0.8mm; word-wrap:break-word;" t-out="o.esi_report_text(line.product_id.display_name)"/>
                         <td style="border:0.45pt solid #444; padding:1mm 0.8mm; text-align:right; white-space:nowrap;"><span t-esc="o.esi_unit_pvp(line)" t-options='{"widget":"monetary","display_currency":o.company_id.currency_id}'/></td>
                         <td t-if="esi_show_cost" style="border:0.45pt solid #444; padding:1mm 0.8mm; text-align:right; white-space:nowrap;"><span t-esc="o.esi_unit_cost(line)" t-options='{"widget":"monetary","display_currency":o.company_id.currency_id}'/></td>
                         <td t-if="esi_show_cost" style="border:0.45pt solid #444; padding:1mm 0.8mm; text-align:right; white-space:nowrap;"><span t-esc="o.esi_line_amount_total(line)" t-options='{"widget":"monetary","display_currency":o.company_id.currency_id}'/></td>
@@ -116,7 +117,7 @@
                         <div style="text-align:center; font-weight:700; margin-bottom:8mm;">CONFORMIDAD</div>
                         <table style="width:100%; border-collapse:collapse; border:0; font-size:8pt;">
                             <tr><td style="width:24%; border:0; padding:0 0 4mm 0;">Firma:</td><td style="border:0; border-bottom:0.6pt solid #222; padding:0 0 4mm 0;"></td></tr>
-                            <tr><td style="border:0; padding:4mm 0;">Aclaración:</td><td style="border:0; border-bottom:0.6pt solid #222; padding:4mm 0;"></td></tr>
+                            <tr><td style="border:0; padding:4mm 0;"><t t-out="o.esi_report_text('Aclaración:')"/></td><td style="border:0; border-bottom:0.6pt solid #222; padding:4mm 0;"></td></tr>
                             <tr><td style="border:0; padding:4mm 0 0 0;">Documento:</td><td style="border:0; border-bottom:0.6pt solid #222; padding:4mm 0 0 0;"></td></tr>
                         </table>
                     </td>

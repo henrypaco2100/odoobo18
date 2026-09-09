@@ -19,13 +19,13 @@
                          style="max-height:16mm; max-width:42mm; width:auto; height:auto;"/>
                 </td>
                 <td style="width:50%; vertical-align:top; text-align:right; border:0; padding:1mm 4mm 0 0; font-size:8pt; line-height:1.45;">
-                    <div style="font-weight:700; font-size:8.5pt;" t-esc="company.name or ''"/>
-                    <div t-if="company.vat"><strong>NIT: </strong><span t-esc="company.vat"/></div>
-                    <div t-if="company.phone"><strong>Tel: </strong><span t-esc="company.phone"/></div>
+                    <div style="font-weight:700; font-size:8.5pt;" t-out="o.esi_report_text(company.name or '')"/>
+                    <div t-if="company.vat"><strong>NIT: </strong><span t-out="o.esi_report_text(company.vat)"/></div>
+                    <div t-if="company.phone"><strong>Tel: </strong><span t-out="o.esi_report_text(company.phone)"/></div>
                     <div t-if="company.partner_id.city or company.partner_id.country_id">
-                        <span t-esc="company.partner_id.city or ''"/>
+                        <span t-out="o.esi_report_text(company.partner_id.city or '')"/>
                         <t t-if="company.partner_id.city and company.partner_id.country_id"> - </t>
-                        <span t-esc="company.partner_id.country_id.name or ''"/>
+                        <span t-out="o.esi_report_text(company.partner_id.country_id.name or '')"/>
                     </div>
                 </td>
             </tr>
@@ -53,22 +53,22 @@
                         </colgroup>
                         <tr>
                             <td style="border:0; padding:0.35mm 0;">FECHA:</td>
-                            <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.esi_date_in_words()"/></td>
+                            <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.esi_date_in_words())"/></td>
                             <td style="border:0; padding:0.35mm 0;">TIPO:</td>
-                            <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.journal_id.name"/></td>
+                            <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.journal_id.name)"/></td>
                         </tr>
                         <tr>
                             <td style="border:0; padding:0.35mm 0;">USUARIO:</td>
-                            <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.create_uid.name"/></td>
-                            <td style="border:0; padding:0.35mm 0;">NÚMERO:</td>
-                            <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.name"/></td>
+                            <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.create_uid.name)"/></td>
+                            <td style="border:0; padding:0.35mm 0;"><t t-out="o.esi_report_text('NÚMERO:')"/></td>
+                            <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.name)"/></td>
                         </tr>
                         <tr>
-                            <td style="border:0; padding:0.35mm 0;">SEÑORES:</td>
-                            <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.partner_id.name or ''"/></td>
+                            <td style="border:0; padding:0.35mm 0;"><t t-out="o.esi_report_text('SEÑORES:')"/></td>
+                            <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.partner_id.name or '')"/></td>
                             <t t-if="o.esi_check_number">
                                 <td style="border:0; padding:0.35mm 0;">CHEQUE:</td>
-                                <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.esi_check_number"/></td>
+                                <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.esi_check_number)"/></td>
                             </t>
                             <t t-else="">
                                 <td style="border:0; padding:0.35mm 0;"></td>
@@ -77,7 +77,7 @@
                         </tr>
                         <tr>
                             <td style="border:0; padding:0.35mm 0;">GLOSA:</td>
-                            <td style="border:0; padding:0.35mm 1mm;"><strong t-esc="o.ref or ''"/></td>
+                            <td style="border:0; padding:0.35mm 1mm;"><strong t-out="o.esi_report_text(o.ref or '')"/></td>
                             <td style="border:0; padding:0.35mm 0;">IMPORTE:</td>
                             <td style="border:0; padding:0.35mm 1mm;">
                                 <strong t-esc="o.esi_total_debit()" t-options='{"widget":"monetary","display_currency":o.company_id.currency_id}'/>
@@ -85,14 +85,15 @@
                         </tr>
                     </table>
 
+                    <!-- ESI corrección: textos con acentos se emiten como entidades HTML seguras para evitar mojibake. -->
                     <!-- ESI corrección: tabla principal ocupa todo el ancho útil del papel. -->
                     <table style="width:100% !important; max-width:none !important; margin:0; border-collapse:collapse; table-layout:fixed; font-size:7.2pt; line-height:1.25;">
                         <thead>
                             <tr style="text-align:center; background:#e6e9ed; font-weight:700;">
                                 <th style="width:19%; border:0.45pt solid #444; padding:1.15mm 0.8mm;">CUENTA</th>
                                 <th style="width:14%; border:0.45pt solid #444; padding:1.15mm 0.8mm;">EMPRESA</th>
-                                <th style="border:0.45pt solid #444; padding:1.15mm 0.8mm;">DESCRIPCIÓN</th>
-                                <th t-if="o.esi_show_analytic" style="width:15%; border:0.45pt solid #444; padding:1.15mm 0.8mm;">ANALÍTICA</th>
+                                <th style="border:0.45pt solid #444; padding:1.15mm 0.8mm;"><t t-out="o.esi_report_text('DESCRIPCIÓN')"/></th>
+                                <th t-if="o.esi_show_analytic" style="width:15%; border:0.45pt solid #444; padding:1.15mm 0.8mm;"><t t-out="o.esi_report_text('ANALÍTICA')"/></th>
                                 <th t-if="o.esi_show_line_date" style="width:10%; border:0.45pt solid #444; padding:1.15mm 0.8mm;">FECHA</th>
                                 <th style="width:9%; border:0.45pt solid #444; padding:1.15mm 0.8mm;">DEBE</th>
                                 <th style="width:9%; border:0.45pt solid #444; padding:1.15mm 0.8mm;">HABER</th>
@@ -101,11 +102,11 @@
                         <tbody>
                             <tr t-foreach="o.esi_ordered_lines()" t-as="line">
                                 <td style="border:0.45pt solid #444; padding:1mm 0.8mm; word-wrap:break-word;">
-                                    <span t-esc="line.account_id.code"/> <span t-esc="line.account_id.name"/>
+                                    <span t-out="o.esi_report_text(line.account_id.code)"/> <span t-out="o.esi_report_text(line.account_id.name)"/>
                                 </td>
-                                <td style="border:0.45pt solid #444; padding:1mm 0.8mm; word-wrap:break-word;" t-esc="line.partner_id.name or ''"/>
-                                <td style="border:0.45pt solid #444; padding:1mm 0.8mm; word-wrap:break-word;" t-esc="line.name or ''"/>
-                                <td t-if="o.esi_show_analytic" style="border:0.45pt solid #444; padding:1mm 0.8mm; word-wrap:break-word;" t-esc="o.esi_line_analytic_label(line)"/>
+                                <td style="border:0.45pt solid #444; padding:1mm 0.8mm; word-wrap:break-word;" t-out="o.esi_report_text(line.partner_id.name or '')"/>
+                                <td style="border:0.45pt solid #444; padding:1mm 0.8mm; word-wrap:break-word;" t-out="o.esi_report_text(line.name or '')"/>
+                                <td t-if="o.esi_show_analytic" style="border:0.45pt solid #444; padding:1mm 0.8mm; word-wrap:break-word;" t-out="o.esi_report_text(o.esi_line_analytic_label(line))"/>
                                 <td t-if="o.esi_show_line_date" style="border:0.45pt solid #444; padding:1mm 0.8mm; text-align:center;"><span t-field="line.date"/></td>
                                 <td style="border:0.45pt solid #444; padding:1mm 0.8mm; text-align:right; white-space:nowrap;"><span t-field="line.debit"/></td>
                                 <td style="border:0.45pt solid #444; padding:1mm 0.8mm; text-align:right; white-space:nowrap;"><span t-field="line.credit"/></td>
@@ -115,7 +116,7 @@
                             <tr style="background:#e6e9ed; font-weight:700;">
                                 <td style="border:0.45pt solid #444; padding:1.15mm 0.8mm;">TOTAL</td>
                                 <td t-att-colspan="2 + (1 if o.esi_show_analytic else 0) + (1 if o.esi_show_line_date else 0)" style="border:0.45pt solid #444; padding:1.15mm 0.8mm; text-align:left;">
-                                    SON: <span t-esc="o.esi_amount_in_words()"/>
+                                    SON: <span t-out="o.esi_report_text(o.esi_amount_in_words())"/>
                                 </td>
                                 <td style="border:0.45pt solid #444; padding:1.15mm 0.8mm; text-align:right; white-space:nowrap;">
                                     <span t-esc="o.esi_total_debit()" t-options='{"widget":"monetary","display_currency":o.company_id.currency_id}'/>
@@ -141,7 +142,7 @@
                                         <td style="border:0; border-bottom:0.6pt solid #222; padding:0 0 4mm 0;"></td>
                                     </tr>
                                     <tr>
-                                        <td style="border:0; padding:4mm 0;">Aclaración:</td>
+                                        <td style="border:0; padding:4mm 0;"><t t-out="o.esi_report_text('Aclaración:')"/></td>
                                         <td style="border:0; border-bottom:0.6pt solid #222; padding:4mm 0;"></td>
                                     </tr>
                                     <tr>
