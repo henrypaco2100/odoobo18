@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ESI Odoo 18: ir.actions.report usa group_ids. -->
+    <!-- ESI corrección Odoo 18: el campo M2M correcto en ir.actions.report es groups_id (no group_ids). -->
     <record id="paperformat_esi_remision_v18" model="report.paperformat">
         <field name="name">ESI Remisiones Carta Odoo 18</field>
         <field name="default" eval="False"/>
@@ -24,7 +24,7 @@
         <field name="binding_model_id" ref="stock.model_stock_picking"/>
         <field name="binding_type">report</field>
         <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
-        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('stock.group_stock_manager'))]"/>
         <field name="print_report_name">'Nota de Remisión - %s' % (object.name)</field>
     </record>
 
@@ -36,7 +36,7 @@
         <field name="binding_model_id" ref="stock.model_stock_picking"/>
         <field name="binding_type">report</field>
         <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
-        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('stock.group_stock_manager'))]"/>
     </record>
 
     <record id="action_entrega_materiales_v18" model="ir.actions.report">
@@ -47,7 +47,7 @@
         <field name="binding_model_id" ref="stock.model_stock_picking"/>
         <field name="binding_type">report</field>
         <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
-        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('stock.group_stock_manager'))]"/>
     </record>
 
     <record id="action_recepcion_consignacion_v18" model="ir.actions.report">
@@ -58,7 +58,7 @@
         <field name="binding_model_id" ref="stock.model_stock_picking"/>
         <field name="binding_type">report</field>
         <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
-        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('stock.group_stock_manager'))]"/>
     </record>
 
     <record id="action_devolucion_proveedores_v18" model="ir.actions.report">
@@ -69,7 +69,7 @@
         <field name="binding_model_id" ref="stock.model_stock_picking"/>
         <field name="binding_type">report</field>
         <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
-        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('stock.group_stock_manager'))]"/>
     </record>
 
     <record id="action_devolucion_librerias_v18" model="ir.actions.report">
@@ -80,6 +80,6 @@
         <field name="binding_model_id" ref="stock.model_stock_picking"/>
         <field name="binding_type">report</field>
         <field name="paperformat_id" ref="paperformat_esi_remision_v18"/>
-        <field name="group_ids" eval="[(4, ref('stock.group_stock_manager'))]"/>
+        <field name="groups_id" eval="[(4, ref('stock.group_stock_manager'))]"/>
     </record>
 </odoo>

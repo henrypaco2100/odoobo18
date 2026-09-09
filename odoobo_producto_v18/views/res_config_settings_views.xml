@@ -1,29 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ESI adaptación Odoo 18: la pantalla de Ajustes usa app/block/setting. -->
+    <!--
+        ESI corrección Odoo 18 - 2026-09-09
+        En Odoo 18 cada opción principal del panel lateral de Ajustes se define
+        con una etiqueta <app> dentro del formulario de res.config.settings.
+        Se crea una aplicación de Ajustes independiente para que aparezca en el
+        menú lateral como "Campos Producto Odoobo", igual al comportamiento
+        buscado en Odoo 13.
+    -->
     <record id="res_config_settings_view_form_esi_product_v18" model="ir.ui.view">
-        <field name="name">res.config.settings.form.esi.product.v18</field>
+        <field name="name">res.config.settings.form.odoobo.product.v18</field>
         <field name="model">res.config.settings</field>
         <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="priority" eval="60"/>
         <field name="arch" type="xml">
-            <xpath expr="//app[@name='general_settings']" position="inside">
-                <block title="Campos adicionales de producto ESI" id="esi_product_fields_settings" groups="base.group_no_one">
-                    <setting string="Nombre del campo adicional 1" help="Cambia únicamente el nombre mostrado del campo; el nombre técnico permanece igual.">
-                        <field name="esi_product_field_1_label"/>
-                    </setting>
-                    <setting string="Nombre del campo adicional 2">
-                        <field name="esi_product_field_2_label"/>
-                    </setting>
-                    <setting string="Nombre del campo adicional 3">
-                        <field name="esi_product_field_3_label"/>
-                    </setting>
-                    <setting string="Nombre del campo adicional 4">
-                        <field name="esi_product_field_4_label"/>
-                    </setting>
-                    <setting string="Nombre del campo adicional 5" help="Después de guardar, recargue la vista de producto para ver los nuevos nombres.">
-                        <field name="esi_product_field_5_label"/>
-                    </setting>
-                </block>
+            <xpath expr="//app[@name='general_settings']" position="after">
+                <app data-string="Campos Producto Odoobo"
+                     string="Campos Producto Odoobo"
+                     name="odoobo_product_fields"
+                     logo="/product/static/description/icon.png"
+                     groups="base.group_no_one">
+
+                    <block title="Nombres de los campos adicionales de producto"
+                           name="odoobo_product_fields_labels">
+
+                        <setting id="odoobo_product_field_1_label_setting"
+                                 string="Nombre del campo adicional 1"
+                                 help="Modifica únicamente el nombre mostrado. El nombre técnico del campo no cambia.">
+                            <field name="esi_product_field_1_label"/>
+                        </setting>
+
+                        <setting id="odoobo_product_field_2_label_setting"
+                                 string="Nombre del campo adicional 2"
+                                 help="Modifica únicamente el nombre mostrado. El nombre técnico del campo no cambia.">
+                            <field name="esi_product_field_2_label"/>
+                        </setting>
+
+                        <setting id="odoobo_product_field_3_label_setting"
+                                 string="Nombre del campo adicional 3"
+                                 help="Modifica únicamente el nombre mostrado. El nombre técnico del campo no cambia.">
+                            <field name="esi_product_field_3_label"/>
+                        </setting>
+
+                        <setting id="odoobo_product_field_4_label_setting"
+                                 string="Nombre del campo adicional 4"
+                                 help="Modifica únicamente el nombre mostrado. El nombre técnico del campo no cambia.">
+                            <field name="esi_product_field_4_label"/>
+                        </setting>
+
+                        <setting id="odoobo_product_field_5_label_setting"
+                                 string="Nombre del campo adicional 5"
+                                 help="Después de guardar, vuelva a abrir o recargue el producto para visualizar el nuevo nombre.">
+                            <field name="esi_product_field_5_label"/>
+                        </setting>
+
+                    </block>
+                </app>
             </xpath>
         </field>
     </record>

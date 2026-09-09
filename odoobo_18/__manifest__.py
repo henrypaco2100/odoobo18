@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "ESI - Comprobante Contable Odoo 18",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "category": "Accounting/Accounting",
     "summary": "Comprobante contable con vista previa y PDF para Odoo 18",
     "description": """

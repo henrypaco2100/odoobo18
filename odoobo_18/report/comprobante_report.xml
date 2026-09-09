@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ESI Odoo 18: ir.actions.report usa group_ids. -->
+    <!-- ESI corrección Odoo 18: el campo M2M correcto en ir.actions.report es groups_id (no group_ids). -->
     <record id="paperformat_comprobante_contable_v18" model="report.paperformat">
         <field name="name">ESI Comprobante Contable Carta Odoo 18</field>
         <field name="default" eval="False"/>
@@ -25,7 +25,7 @@
         <field name="binding_type">report</field>
         <field name="paperformat_id" ref="paperformat_comprobante_contable_v18"/>
         <field name="print_report_name">object.esi_report_filename()</field>
-        <field name="group_ids" eval="[(4, ref('account.group_account_invoice')), (4, ref('account.group_account_user'))]"/>
+        <field name="groups_id" eval="[(4, ref('account.group_account_invoice')), (4, ref('account.group_account_user'))]"/>
     </record>
 
     <record id="action_comprobante_contable_html" model="ir.actions.report">
@@ -35,6 +35,6 @@
         <field name="report_name">odoobo_18.comprobante_contable_document</field>
         <field name="report_file">odoobo_18.comprobante_contable_document</field>
         <field name="paperformat_id" ref="paperformat_comprobante_contable_v18"/>
-        <field name="group_ids" eval="[(4, ref('account.group_account_invoice')), (4, ref('account.group_account_user'))]"/>
+        <field name="groups_id" eval="[(4, ref('account.group_account_invoice')), (4, ref('account.group_account_user'))]"/>
     </record>
 </odoo>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "ESI - Remisiones Odoo 18",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.0.1",
     "category": "Inventory/Inventory",
     "summary": "Reportes de remisión y consignación para Odoo 18",
     "description": """
