@@ -5,9 +5,18 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
-            <!-- ESI Odoo 18: campo agregado junto al documento de origen. -->
-            <xpath expr="//field[@name='origin']" position="after">
-                <field name="esi_remission_percentage" groups="stock.group_stock_user"/>
+            <!--
+                ESI Odoo 18: las opciones se colocan en Información adicional,
+                en la misma sección indicada por el usuario. Son editables incluso
+                después de validar porque únicamente controlan la impresión.
+            -->
+            <xpath expr="//page[@name='extra']/group/group[@name='other_infos']" position="after">
+                <group string="Remision / Opciones de impresion" name="esi_remision_print_options">
+                    <field name="esi_remission_percentage"/>
+                    <field name="esi_print_cost"/>
+                    <field name="esi_print_cost_total"/>
+                    <field name="esi_print_amount_total"/>
+                </group>
             </xpath>
         </field>
     </record>

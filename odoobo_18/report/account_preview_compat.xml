@@ -2,12 +2,18 @@
 <odoo>
     <!--
         ESI corrección Odoo 18:
-        En algunas revisiones de Odoo 18, el preview de Diseño del documento ejecuta
-        o.tax_totals.get(...) aunque tax_totals sea False. Esto provoca:
-        AttributeError: 'bool' object has no attribute 'get'.
-        Se agrega la comprobación de existencia antes de llamar .get().
+        El preview de Diseño del documento hereda account.report_invoice_document.
+        En ciertas bases el wizard usa un registro sin tax_totals y el template
+        original intenta ejecutar False.get(...). Se protege tanto el template base
+        como el preview primario para evitar AttributeError: bool has no attribute get.
     -->
-    <template id="esi_account_invoice_tax_totals_preview_safe" inherit_id="account.report_invoice_document">
+    <template id="esi_account_invoice_tax_totals_safe" inherit_id="account.report_invoice_document">
+        <xpath expr="//t[@t-if=&quot;o.tax_totals.get('display_in_company_currency')&quot;]" position="attributes">
+            <attribute name="t-if">o.tax_totals and o.tax_totals.get('display_in_company_currency')</attribute>
+        </xpath>
+    </template>
+
+    <template id="esi_account_invoice_tax_totals_preview_safe" inherit_id="account.report_invoice_document_preview">
         <xpath expr="//t[contains(@t-if, &quot;tax_totals.get('display_in_company_currency')&quot;)]" position="attributes">
             <attribute name="t-if">o.tax_totals and o.tax_totals.get('display_in_company_currency')</attribute>
         </xpath>

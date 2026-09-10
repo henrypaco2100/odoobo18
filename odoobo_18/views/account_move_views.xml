@@ -5,7 +5,7 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
-            <!-- ESI adaptación Odoo 18: attrs ya no se utiliza; se usa invisible directo. -->
+            <!-- ESI Odoo 18: botones de comprobante. -->
             <xpath expr="//header" position="inside">
                 <button name="action_esi_comprobante_preview"
                         type="object"
@@ -20,12 +20,24 @@
                         groups="account.group_account_invoice,account.group_account_user"/>
             </xpath>
 
-            <!-- Odoo 18 tiene dos páginas Other Info: una para facturas y otra para asientos. -->
+            <!--
+                ESI corrección v5: para asientos contables Odoo 18 oculta partner_id en
+                el encabezado. Se vuelve a mostrar con el nombre solicitado y, al
+                elegirlo, el Python lo replica por defecto en todas las líneas.
+            -->
+            <xpath expr="//group[@id='header_left_group']" position="inside">
+                <field name="partner_id"
+                       string="Nombre completo"
+                       invisible="move_type != 'entry'"
+                       readonly="state != 'draft'"
+                       options="{'no_quick_create': True}"/>
+            </xpath>
+
+            <!-- Odoo 18 tiene dos páginas Other Info: factura y asiento. -->
             <xpath expr="//page[@id='other_tab']/group[@id='other_tab_group']" position="inside">
                 <group string="Comprobante Contable" name="esi_comprobante_options_invoice"
                        groups="account.group_account_invoice,account.group_account_user">
                     <field name="esi_check_number"/>
-                    <field name="esi_show_line_date"/>
                     <field name="esi_show_analytic"/>
                 </group>
             </xpath>
@@ -34,7 +46,6 @@
                 <group string="Comprobante Contable" name="esi_comprobante_options_entry"
                        groups="account.group_account_invoice,account.group_account_user">
                     <field name="esi_check_number"/>
-                    <field name="esi_show_line_date"/>
                     <field name="esi_show_analytic"/>
                 </group>
             </xpath>

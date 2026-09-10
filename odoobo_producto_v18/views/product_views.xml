@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ESI adaptación Odoo 18: Odoo 18 usa <list> en lugar de <tree>. -->
+    <!-- ESI adaptación Odoo 18: diez campos adicionales configurables. -->
 
     <record id="product_template_form_esi_fields_v18" model="ir.ui.view">
         <field name="name">product.template.form.esi.fields.v18</field>
@@ -14,10 +14,15 @@
                             <field name="esi_extra_field_1"/>
                             <field name="esi_extra_field_2"/>
                             <field name="esi_extra_field_3"/>
-                        </group>
-                        <group>
                             <field name="esi_extra_field_4"/>
                             <field name="esi_extra_field_5"/>
+                        </group>
+                        <group>
+                            <field name="esi_extra_field_6"/>
+                            <field name="esi_extra_field_7"/>
+                            <field name="esi_extra_field_8"/>
+                            <field name="esi_extra_field_9"/>
+                            <field name="esi_extra_field_10"/>
                         </group>
                     </group>
                 </page>
@@ -37,10 +42,15 @@
                             <field name="esi_extra_field_1"/>
                             <field name="esi_extra_field_2"/>
                             <field name="esi_extra_field_3"/>
-                        </group>
-                        <group>
                             <field name="esi_extra_field_4"/>
                             <field name="esi_extra_field_5"/>
+                        </group>
+                        <group>
+                            <field name="esi_extra_field_6"/>
+                            <field name="esi_extra_field_7"/>
+                            <field name="esi_extra_field_8"/>
+                            <field name="esi_extra_field_9"/>
+                            <field name="esi_extra_field_10"/>
                         </group>
                     </group>
                 </page>
@@ -56,11 +66,16 @@
         <field name="arch" type="xml">
             <xpath expr="//group[@name='pricing']" position="after">
                 <group string="Datos adicionales ESI" name="esi_additional_fields_easy">
-                    <field name="esi_extra_field_1"/>
-                    <field name="esi_extra_field_2"/>
-                    <field name="esi_extra_field_3"/>
-                    <field name="esi_extra_field_4"/>
-                    <field name="esi_extra_field_5"/>
+                            <field name="esi_extra_field_1"/>
+                            <field name="esi_extra_field_2"/>
+                            <field name="esi_extra_field_3"/>
+                            <field name="esi_extra_field_4"/>
+                            <field name="esi_extra_field_5"/>
+                            <field name="esi_extra_field_6"/>
+                            <field name="esi_extra_field_7"/>
+                            <field name="esi_extra_field_8"/>
+                            <field name="esi_extra_field_9"/>
+                            <field name="esi_extra_field_10"/>
                 </group>
             </xpath>
         </field>
@@ -78,6 +93,11 @@
                 <field name="esi_extra_field_3" optional="hide"/>
                 <field name="esi_extra_field_4" optional="hide"/>
                 <field name="esi_extra_field_5" optional="hide"/>
+                <field name="esi_extra_field_6" optional="hide"/>
+                <field name="esi_extra_field_7" optional="hide"/>
+                <field name="esi_extra_field_8" optional="hide"/>
+                <field name="esi_extra_field_9" optional="hide"/>
+                <field name="esi_extra_field_10" optional="hide"/>
             </xpath>
         </field>
     </record>
@@ -94,12 +114,16 @@
                 <field name="esi_extra_field_3" optional="hide"/>
                 <field name="esi_extra_field_4" optional="hide"/>
                 <field name="esi_extra_field_5" optional="hide"/>
+                <field name="esi_extra_field_6" optional="hide"/>
+                <field name="esi_extra_field_7" optional="hide"/>
+                <field name="esi_extra_field_8" optional="hide"/>
+                <field name="esi_extra_field_9" optional="hide"/>
+                <field name="esi_extra_field_10" optional="hide"/>
             </xpath>
         </field>
     </record>
 
-    <!-- ESI: la búsqueda de product.product hereda la búsqueda de product.template,
-         por eso basta extender la vista base una sola vez. -->
+    <!-- ESI: búsqueda por los diez campos adicionales. -->
     <record id="product_template_search_esi_fields_v18" model="ir.ui.view">
         <field name="name">product.template.search.esi.fields.v18</field>
         <field name="model">product.template</field>
@@ -111,6 +135,11 @@
                 <field name="esi_extra_field_3"/>
                 <field name="esi_extra_field_4"/>
                 <field name="esi_extra_field_5"/>
+                <field name="esi_extra_field_6"/>
+                <field name="esi_extra_field_7"/>
+                <field name="esi_extra_field_8"/>
+                <field name="esi_extra_field_9"/>
+                <field name="esi_extra_field_10"/>
             </xpath>
         </field>
     </record>

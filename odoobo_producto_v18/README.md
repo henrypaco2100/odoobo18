@@ -1,5 +1,7 @@
-# odoobo_producto_v18
+# Odoobo Producto v18
 
-Adaptación ESI para Odoo 18 Community.
+Módulo para Odoo 18 Community que añade **10 campos Char adicionales** a productos y variantes.
 
-Añade cinco campos Char a productos/plantillas con etiquetas configurables por administradores, visibles en formularios, listas y búsquedas.
+Los nombres mostrados de los 10 campos pueden configurarse desde **Ajustes > Campos Producto Odoobo** por administradores en modo desarrollador.
+
+Los campos aparecen en formularios, edición rápida, búsquedas y como columnas opcionales en listas.

@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
-from html import escape
+import unicodedata
 
-from markupsafe import Markup
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    esi_show_line_date = fields.Boolean(string="Mostrar fecha", default=False)
+    # ESI corrección Odoo 18: se conserva el campo por compatibilidad con bases que
+    # ya instalaron una versión anterior, pero la FECHA ahora SIEMPRE se imprime.
+    esi_show_line_date = fields.Boolean(string="Mostrar fecha", default=True)
     esi_show_analytic = fields.Boolean(string="Mostrar analítica", default=True)
     esi_check_number = fields.Char(string="Nro. de cheque")
 
-    # ESI corrección Odoo 18: salida HTML/PDF robusta para textos con tildes/ñ.
-    # Además corrige textos que ya lleguen como mojibake (ej. "LÃ¡mpara").
-    def esi_report_text(self, value):
+    def _esi_fix_mojibake(self, value):
+        """Corrige mojibake frecuente UTF-8/Windows-1252 antes de imprimir."""
         if value in (False, None):
-            return Markup("")
+            return ""
         text = str(value)
-        markers = ("Ã", "Â", "â€", "â€™", "â€œ", "â€", "ð")
+        markers = ("Ã", "Â", "â€", "â€™", "â€œ", "â€\x9d", "ð")
         if any(marker in text for marker in markers):
             original_score = sum(text.count(marker) for marker in markers)
             for encoding in ("cp1252", "latin1"):
@@ -31,11 +31,31 @@ class AccountMove(models.Model):
                 if candidate_score < original_score:
                     text = candidate
                     break
-        # Convertimos caracteres no ASCII en entidades HTML numéricas.
-        # Así wkhtmltopdf/browser no puede reinterpretar UTF-8 como Windows-1252.
-        escaped = escape(text, quote=False)
-        ascii_html = escaped.encode("ascii", "xmlcharrefreplace").decode("ascii")
-        return Markup(ascii_html)
+        return text
+
+    def esi_report_text(self, value, output_type=None):
+        """Texto estable para Vista HTML y PDF.
+
+        ESI corrección: la vista HTML de Odoo interpreta UTF-8 correctamente, pero
+        el wkhtmltopdf del servidor estaba produciendo mojibake (MueblerÃ­a,
+        DESCRIPCIÃ“N, etc.). En PDF se translitera únicamente el texto dinámico a
+        ASCII para garantizar que no aparezcan caracteres raros; en HTML se conserva
+        el texto Unicode corregido.
+        """
+        text = self._esi_fix_mojibake(value)
+        if output_type == "pdf":
+            return unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+        return text
+
+    def esi_format_amount(self, value):
+        """Importes sin símbolo de moneda, con 2 decimales."""
+        try:
+            amount = float(value or 0.0)
+        except (TypeError, ValueError):
+            amount = 0.0
+        # Formato hispano estable para PDF: 1.234,56 (sin Bs., $, etc.).
+        raw = f"{amount:,.2f}"
+        return raw.replace(",", "X").replace(".", ",").replace("X", ".")
 
     def esi_report_filename(self):
         self.ensure_one()
@@ -45,7 +65,6 @@ class AccountMove(models.Model):
 
     def esi_date_in_words(self):
         self.ensure_one()
-        # ESI Odoo 18: account.move.type fue reemplazado hace varias versiones por move_type.
         if self.move_type in (
             "out_invoice", "in_invoice", "out_refund", "in_refund",
             "out_receipt", "in_receipt",
@@ -83,11 +102,7 @@ class AccountMove(models.Model):
             return "%s %02d/100" % (integer, cents)
 
     def esi_line_analytic_label(self, line):
-        """Convierte analytic_distribution de Odoo 18 en nombres legibles.
-
-        Odoo 18 ya no usa analytic_account_id en account.move.line. Las claves de
-        analytic_distribution pueden contener uno o varios IDs separados por coma.
-        """
+        """Convierte analytic_distribution de Odoo 18 en nombres legibles."""
         self.ensure_one()
         distribution = line.analytic_distribution or {}
         if not distribution:
@@ -105,6 +120,45 @@ class AccountMove(models.Model):
             if accounts:
                 groups.append(" / ".join(accounts.mapped("display_name")))
         return "; ".join(groups)
+
+    def esi_report_partner_name(self):
+        """Nombre completo del encabezado con fallback a los apuntes.
+
+        ESI: en asientos generados por POS u otros procesos partner_id del asiento
+        puede venir vacío aunque alguna línea tenga empresa/contacto.
+        """
+        self.ensure_one()
+        if self.partner_id:
+            return self.partner_id.name or self.partner_id.display_name or ""
+        partners = self.line_ids.mapped("partner_id").filtered(lambda p: p)
+        return partners[:1].name if partners else ""
+
+    @api.onchange("partner_id")
+    def _onchange_esi_partner_to_lines(self):
+        """Al elegir Nombre completo, lo coloca por defecto en todas las líneas."""
+        for move in self:
+            if move.move_type == "entry" and move.partner_id and move.state == "draft":
+                for line in move.line_ids:
+                    line.partner_id = move.partner_id
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        moves = super().create(vals_list)
+        # ESI: asegura consistencia también cuando el asiento se crea por código.
+        for move in moves.filtered(lambda m: m.move_type == "entry" and m.state == "draft" and m.partner_id):
+            lines = move.line_ids.filtered(lambda l: l.partner_id != move.partner_id)
+            if lines:
+                lines.write({"partner_id": move.partner_id.id})
+        return moves
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "partner_id" in vals:
+            for move in self.filtered(lambda m: m.move_type == "entry" and m.state == "draft" and m.partner_id):
+                lines = move.line_ids.filtered(lambda l: l.partner_id != move.partner_id)
+                if lines:
+                    lines.write({"partner_id": move.partner_id.id})
+        return res
 
     def action_esi_comprobante_preview(self):
         self.ensure_one()

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from html import escape
+import unicodedata
 
-from markupsafe import Markup
 from odoo import fields, models
 
 
@@ -10,13 +9,16 @@ class StockPicking(models.Model):
 
     esi_remission_percentage = fields.Char(string="Porcentaje")
 
-    # ESI corrección Odoo 18: salida HTML/PDF robusta para textos con tildes/ñ.
-    # También intenta reparar mojibake ya presente, por ejemplo "LÃ¡mpara" -> "Lámpara".
-    def esi_report_text(self, value):
+    # ESI corrección: opciones de impresión solicitadas para Odoo 18.
+    esi_print_cost = fields.Boolean(string="Imprimir costo", default=True)
+    esi_print_cost_total = fields.Boolean(string="Imprimir costo total", default=False)
+    esi_print_amount_total = fields.Boolean(string="Imprimir importe total", default=True)
+
+    def _esi_fix_mojibake(self, value):
         if value in (False, None):
-            return Markup("")
+            return ""
         text = str(value)
-        markers = ("Ã", "Â", "â€", "â€™", "â€œ", "â€", "ð")
+        markers = ("Ã", "Â", "â€", "â€™", "â€œ", "â€\x9d", "ð")
         if any(marker in text for marker in markers):
             original_score = sum(text.count(marker) for marker in markers)
             for encoding in ("cp1252", "latin1"):
@@ -28,9 +30,34 @@ class StockPicking(models.Model):
                 if candidate_score < original_score:
                     text = candidate
                     break
-        escaped = escape(text, quote=False)
-        ascii_html = escaped.encode("ascii", "xmlcharrefreplace").decode("ascii")
-        return Markup(ascii_html)
+        return text
+
+    def esi_report_text(self, value, output_type=None):
+        """Unicode en HTML; ASCII estable en PDF para evitar caracteres Ã...."""
+        text = self._esi_fix_mojibake(value)
+        if output_type == "pdf":
+            return unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+        return text
+
+    def esi_format_amount(self, value):
+        """Importes sin símbolo de moneda."""
+        try:
+            amount = float(value or 0.0)
+        except (TypeError, ValueError):
+            amount = 0.0
+        raw = f"{amount:,.2f}"
+        return raw.replace(",", "X").replace(".", ",").replace("X", ".")
+
+    def esi_format_quantity(self, value):
+        try:
+            qty = float(value or 0.0)
+        except (TypeError, ValueError):
+            qty = 0.0
+        # Mantiene una salida limpia: 3 en lugar de 3,00 cuando es entero.
+        if qty.is_integer():
+            return str(int(qty))
+        raw = f"{qty:,.2f}"
+        return raw.replace(",", "X").replace(".", ",").replace("X", ".")
 
     def esi_date_in_words(self):
         self.ensure_one()
@@ -48,7 +75,7 @@ class StockPicking(models.Model):
         ).sorted(key=lambda move: move.id)
 
     def esi_move_quantity(self, move):
-        """ESI Odoo 18: quantity sustituye a quantity_done de versiones antiguas."""
+        """Odoo 18: quantity sustituye a quantity_done de versiones antiguas."""
         return move.quantity or move.product_uom_qty
 
     def esi_unit_cost(self, move):
@@ -64,7 +91,7 @@ class StockPicking(models.Model):
         return self.esi_move_quantity(move) * self.esi_unit_pvp(move)
 
     def esi_line_cost_total(self, move):
-        # Compatibilidad: costo total no se imprime como IMPORTE TOTAL.
+        # ESI: COSTO TOTAL = CANTIDAD x COSTO UNITARIO.
         return self.esi_move_quantity(move) * self.esi_unit_cost(move)
 
     def esi_total_quantity(self):

@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Odoobo - Campos Producto Odoo 18",
-    "version": "18.0.1.1.0",
+    "version": "18.0.1.2.0",
     "category": "Sales/Products",
-    "summary": "Cinco campos adicionales de producto con etiquetas configurables",
+    "summary": "Diez campos adicionales de producto con etiquetas configurables",
     "description": """
 ESI - Campos Adicionales de Producto para Odoo 18 Community.
 
-- Añade cinco campos Char a producto/plantilla.
+- Añade diez campos Char a producto/plantilla.
 - Se muestran en formularios de producto y variante.
 - Se muestran como columnas opcionales en listas.
 - Se pueden usar en búsquedas.
-- Los nombres mostrados de los cinco campos son configurables por administradores.
+- Los nombres mostrados de los diez campos son configurables por administradores.
+- Conserva los cinco campos originales y agrega los campos 6 al 10.
 - Sin dependencias de módulos de terceros.
     """,
     "author": "ESI Bolivia",

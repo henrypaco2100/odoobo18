@@ -36,3 +36,33 @@ class ResConfigSettings(models.TransientModel):
         default="Campo adicional 5",
         groups="base.group_system",
     )
+    esi_product_field_6_label = fields.Char(
+        string="Nombre del campo 6",
+        config_parameter="odoobo_producto.field_6_label",
+        default="Campo adicional 6",
+        groups="base.group_system",
+    )
+    esi_product_field_7_label = fields.Char(
+        string="Nombre del campo 7",
+        config_parameter="odoobo_producto.field_7_label",
+        default="Campo adicional 7",
+        groups="base.group_system",
+    )
+    esi_product_field_8_label = fields.Char(
+        string="Nombre del campo 8",
+        config_parameter="odoobo_producto.field_8_label",
+        default="Campo adicional 8",
+        groups="base.group_system",
+    )
+    esi_product_field_9_label = fields.Char(
+        string="Nombre del campo 9",
+        config_parameter="odoobo_producto.field_9_label",
+        default="Campo adicional 9",
+        groups="base.group_system",
+    )
+    esi_product_field_10_label = fields.Char(
+        string="Nombre del campo 10",
+        config_parameter="odoobo_producto.field_10_label",
+        default="Campo adicional 10",
+        groups="base.group_system",
+    )

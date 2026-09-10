@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "ESI - Remisiones Odoo 18",
-    "version": "18.0.1.0.2",
+    "version": "18.0.1.0.5",
     "category": "Inventory/Inventory",
     "summary": "Reportes de remisión y consignación para Odoo 18",
     "description": """
@@ -14,7 +14,9 @@ Reportes ESI para Odoo 18 Community:
 - Devolución de Librerías.
 
 Incluye cabecera con logo e información de la compañía.
-En Nota de Remisión: IMPORTE TOTAL = CANTIDAD x PVP; COSTO es solo informativo.
+En Nota de Remisión: IMPORTE TOTAL = CANTIDAD x PVP; COSTO TOTAL = CANTIDAD x COSTO.
+Las columnas COSTO, COSTO TOTAL e IMPORTE TOTAL son opcionales desde Información adicional.
+Los importes se imprimen sin símbolo de moneda (sin Bs.).
 Sin dependencias de módulos de terceros.
     """,
     "author": "ESI Bolivia",
