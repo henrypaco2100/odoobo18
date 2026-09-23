@@ -8,9 +8,9 @@ from odoo.exceptions import UserError
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    # ESI corrección Odoo 18: se conserva el campo por compatibilidad con bases que
-    # ya instalaron una versión anterior, pero la FECHA ahora SIEMPRE se imprime.
-    esi_show_line_date = fields.Boolean(string="Mostrar fecha", default=True)
+    # Compatibilidad con versiones anteriores del módulo.
+    # La fecha SOLO se imprime en el encabezado; nunca se imprime por línea.
+    esi_show_line_date = fields.Boolean(string="Mostrar fecha", default=False)
     esi_show_analytic = fields.Boolean(string="Mostrar analítica", default=True)
     esi_check_number = fields.Char(string="Nro. de cheque")
 
@@ -95,11 +95,14 @@ class AccountMove(models.Model):
         amount = self.esi_total_debit()
         currency = self.company_id.currency_id
         try:
-            return currency.amount_to_text(amount).upper()
+            text = currency.amount_to_text(amount).upper()
+            # ESI: por solicitud del cliente, usar BOLIVIANO en singular en todos los importes en letras.
+            text = text.replace("BOLIVIANOS", "BOLIVIANO")
+            return text
         except Exception:
             integer = int(amount)
             cents = int(round((amount - integer) * 100))
-            return "%s %02d/100" % (integer, cents)
+            return "%s %02d/100 BOLIVIANO" % (integer, cents)
 
     def esi_line_analytic_label(self, line):
         """Convierte analytic_distribution de Odoo 18 en nombres legibles."""

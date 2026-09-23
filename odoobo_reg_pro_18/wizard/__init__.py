@@ -1,1 +1,1 @@
-from . import report_by_author
+from . import stock_report_by_author

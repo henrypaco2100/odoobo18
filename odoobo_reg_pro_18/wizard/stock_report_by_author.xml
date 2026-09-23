@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_odoobo_report_by_author_form" model="ir.ui.view">
+        <field name="name">odoobo.report.by.author.form</field>
+        <field name="model">odoobo.report.by.author</field>
+        <field name="arch" type="xml">
+            <form string="INFORME POR VENTA DE PUBLICACIONES">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <group>
+                            <field name="autor_id" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="product_id" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group invisible="not excel_file">
+                        <field name="file_name" invisible="1"/>
+                        <field name="excel_file" filename="file_name" readonly="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_export_xlsx" type="object" string="Imprimir Excel" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_odoobo_report_by_author" model="ir.actions.act_window">
+        <field name="name">Informe por Venta de Publicaciones</field>
+        <field name="res_model">odoobo.report.by.author</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_odoobo_report_by_author_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menú conservado del stock_report_by_author original: Informes > Informe por autor > Informe por Venta de Publicaciones -->
+    <menuitem id="menu_odoobo_report_by_author_root"
+              name="Informe por autor"
+              parent="stock.menu_warehouse_report"
+              sequence="400"
+              groups="stock.group_stock_user"/>
+
+    <menuitem id="menu_odoobo_report_by_author"
+              name="Informe por Venta de Publicaciones"
+              parent="menu_odoobo_report_by_author_root"
+              action="action_odoobo_report_by_author"
+              sequence="10"
+              groups="stock.group_stock_user"/>
+</odoo>

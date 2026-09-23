@@ -11,8 +11,8 @@
                          alt="Logo"
                          style="max-height:17mm; max-width:39mm; width:auto; height:auto;"/>
                 </td>
-                <td style="width:50%; vertical-align:top; text-align:right; border:0; padding:0 2mm 0 0; font-family:Arial, Helvetica, sans-serif; font-size:7.5pt; line-height:1.45;">
-                    <div style="font-weight:700; font-size:8pt;" t-out="o.esi_report_text(company.name or '', report_type)"/>
+                <td style="width:50%; vertical-align:top; text-align:right; border:0; padding:0 2mm 0 0; font-family:Arial, Helvetica, sans-serif; font-size:8.5pt; line-height:1.45;">
+                    <div style="font-weight:700; font-size:9pt;" t-out="o.esi_report_text(company.name or '', report_type)"/>
                     <div t-if="company.vat"><strong>NIT: </strong><span t-out="o.esi_report_text(company.vat, report_type)"/></div>
                     <div t-if="company.phone"><strong>Tel: </strong><span t-out="o.esi_report_text(company.phone, report_type)"/></div>
                     <div t-if="company.partner_id.city or company.partner_id.country_id">
@@ -28,14 +28,14 @@
     <template id="comprobante_contable_document">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <div class="page" style="width:100%; margin:0; padding:0; color:#000; font-family:Arial, Helvetica, sans-serif; font-size:8pt;">
+                <div class="page" style="width:100%; margin:0; padding:0; color:#000; font-family:Arial, Helvetica, sans-serif; font-size:9pt;">
                     <t t-call="odoobo_18.esi_company_header"/>
 
                     <div style="width:100%; text-align:center; margin:1mm 0 4mm 0;">
-                        <span style="font-size:11pt; font-weight:400; text-decoration:underline;">COMPROBANTE CONTABLE</span>
+                        <span style="font-size:12pt; font-weight:400; text-decoration:underline;">COMPROBANTE CONTABLE</span>
                     </div>
 
-                    <table style="width:90%; margin:0 auto 6mm auto; border-collapse:collapse; border:0; table-layout:fixed; font-size:8pt; line-height:1.45;">
+                    <table style="width:90%; margin:0 auto 6mm auto; border-collapse:collapse; border:0; table-layout:fixed; font-size:9pt; line-height:1.45;">
                         <colgroup>
                             <col style="width:12%;"/><col style="width:38%;"/>
                             <col style="width:12%;"/><col style="width:38%;"/>
@@ -72,15 +72,14 @@
                         </tr>
                     </table>
 
-                    <!-- ESI: FECHA siempre visible. No se usa símbolo de moneda. -->
-                    <table style="width:94%; margin:0 auto; border-collapse:collapse; table-layout:fixed; font-size:7.2pt; line-height:1.25;">
+                    <!-- ESI v6: FECHA solo en encabezado. Sin símbolo de moneda. -->
+                    <table style="width:94%; margin:0 auto; border-collapse:collapse; table-layout:fixed; font-size:8.2pt; line-height:1.25;">
                         <thead>
                             <tr style="text-align:center; background:#e6e9ed; font-weight:700;">
                                 <th style="width:20%; border:0.45pt solid #444; padding:1mm 0.7mm;">CUENTA</th>
                                 <th style="width:16%; border:0.45pt solid #444; padding:1mm 0.7mm;">EMPRESA</th>
                                 <th style="border:0.45pt solid #444; padding:1mm 0.7mm;">DESCRIPCION</th>
                                 <th t-if="o.esi_show_analytic" style="width:15%; border:0.45pt solid #444; padding:1mm 0.7mm;">ANALITICA</th>
-                                <th style="width:10%; border:0.45pt solid #444; padding:1mm 0.7mm;">FECHA</th>
                                 <th style="width:9%; border:0.45pt solid #444; padding:1mm 0.7mm;">DEBE</th>
                                 <th style="width:9%; border:0.45pt solid #444; padding:1mm 0.7mm;">HABER</th>
                             </tr>
@@ -94,7 +93,6 @@
                                 <td style="border:0.45pt solid #444; padding:0.8mm 0.7mm; word-wrap:break-word;" t-out="o.esi_report_text(line.partner_id.name or o.esi_report_partner_name(), report_type)"/>
                                 <td style="border:0.45pt solid #444; padding:0.8mm 0.7mm; word-wrap:break-word;" t-out="o.esi_report_text(line.name or '', report_type)"/>
                                 <td t-if="o.esi_show_analytic" style="border:0.45pt solid #444; padding:0.8mm 0.7mm; word-wrap:break-word;" t-out="o.esi_report_text(o.esi_line_analytic_label(line), report_type)"/>
-                                <td style="border:0.45pt solid #444; padding:0.8mm 0.7mm; text-align:center;"><span t-field="line.date"/></td>
                                 <td style="border:0.45pt solid #444; padding:0.8mm 0.7mm; text-align:right; white-space:nowrap;" t-out="o.esi_format_amount(line.debit)"/>
                                 <td style="border:0.45pt solid #444; padding:0.8mm 0.7mm; text-align:right; white-space:nowrap;" t-out="o.esi_format_amount(line.credit)"/>
                             </tr>
@@ -102,7 +100,7 @@
                         <tfoot>
                             <tr style="background:#e6e9ed; font-weight:700;">
                                 <td style="border:0.45pt solid #444; padding:1mm 0.7mm;">TOTAL</td>
-                                <td t-att-colspan="3 + (1 if o.esi_show_analytic else 0)" style="border:0.45pt solid #444; padding:1mm 0.7mm; text-align:left;">
+                                <td t-att-colspan="2 + (1 if o.esi_show_analytic else 0)" style="border:0.45pt solid #444; padding:1mm 0.7mm; text-align:left;">
                                     SON: <span t-out="o.esi_report_text(o.esi_amount_in_words(), report_type)"/>
                                 </td>
                                 <td style="border:0.45pt solid #444; padding:1mm 0.7mm; text-align:right; white-space:nowrap;" t-out="o.esi_format_amount(o.esi_total_debit())"/>
@@ -111,14 +109,14 @@
                         </tfoot>
                     </table>
 
-                    <table style="width:90%; margin:7mm auto 0 auto; border-collapse:collapse; border:0; table-layout:fixed; page-break-inside:avoid; font-size:8pt;">
+                    <table style="width:90%; margin:7mm auto 0 auto; border-collapse:collapse; border:0; table-layout:fixed; page-break-inside:avoid; font-size:9pt;">
                         <tr style="height:40mm;">
                             <td style="width:18%; border:0; text-align:center; vertical-align:bottom; padding-bottom:1mm;"><strong>ELABORADO</strong></td>
                             <td style="width:18%; border:0; text-align:center; vertical-align:bottom; padding-bottom:1mm;"><strong>REVISADO</strong></td>
                             <td style="width:18%; border:0; text-align:center; vertical-align:bottom; padding-bottom:1mm;"><strong>AUTORIZADO</strong></td>
                             <td style="width:46%; border:0; vertical-align:top; padding-left:5mm;">
                                 <div style="text-align:center; font-weight:700; margin-bottom:8mm;">CONFORMIDAD</div>
-                                <table style="width:100%; border-collapse:collapse; border:0; font-size:8pt;">
+                                <table style="width:100%; border-collapse:collapse; border:0; font-size:9pt;">
                                     <tr><td style="width:24%; border:0; padding:0 0 4mm 0;">Firma:</td><td style="border:0; border-bottom:0.6pt solid #222; padding:0 0 4mm 0;"></td></tr>
                                     <tr><td style="border:0; padding:4mm 0;">Aclaracion:</td><td style="border:0; border-bottom:0.6pt solid #222; padding:4mm 0;"></td></tr>
                                     <tr><td style="border:0; padding:4mm 0 0 0;">Documento:</td><td style="border:0; border-bottom:0.6pt solid #222; padding:4mm 0 0 0;"></td></tr>
