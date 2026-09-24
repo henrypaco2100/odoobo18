@@ -19,3 +19,11 @@ MRP, personalizaciones de picking, multi-store, reportes de producción ni otras
 ## COE
 
 Se conserva la lógica original: el valor `sd_amount_impuesto` del producto se usa para los pares PRO/REG y COE PRO/COE REG. El campo `% COE` del autor se conserva como identificador para la creación/nombre de las cuentas COE.
+
+Secuencia de categoría / Código Interno (v4)
+--------------------------------------------
+Cada categoría de producto puede tener una secuencia independiente para Código Interno.
+En la categoría se configura el prefijo y la cantidad de dígitos y se usa el botón
+"Crear / Actualizar secuencia". En el producto, dentro de Datos Editoriales, el botón
+"Generar código" toma el siguiente correlativo de la categoría y lo guarda en
+sd_codigo_interno. El botón no sobreescribe códigos ya existentes.

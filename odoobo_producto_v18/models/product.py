@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import fields, models, _
+from odoo.exceptions import UserError
 
 
 # ESI adaptación Odoo 18:
@@ -55,3 +56,45 @@ class ProductProduct(models.Model):
     def fields_get(self, allfields=None, attributes=None):
         result = super().fields_get(allfields=allfields, attributes=attributes)
         return _esi_apply_dynamic_labels(self.env, result)
+
+
+class ProductTemplateCategorySequence(models.Model):
+    _inherit = "product.template"
+
+    def action_obtener_siguiente_sequencia(self):
+        """Genera la referencia interna usando la secuencia propia de la categoría.
+
+        Mejora v18: usa directamente el valor devuelto por ir.sequence, evitando
+        el desfase del código v13 que avanzaba la secuencia y después leía el
+        siguiente número.
+        """
+        for product in self:
+            if not product.categ_id:
+                raise UserError(_("Seleccione una categoría antes de generar la referencia."))
+            if product.default_code:
+                raise UserError(_(
+                    "El producto '%s' ya tiene la referencia interna '%s'.\n"
+                    "Límpiela primero si necesita generar una nueva.",
+                    product.display_name,
+                    product.default_code,
+                ))
+            product.default_code = product.categ_id._odoobo_next_product_reference()
+        return True
+
+
+class ProductProductCategorySequence(models.Model):
+    _inherit = "product.product"
+
+    def action_obtener_siguiente_sequencia(self):
+        for product in self:
+            if not product.categ_id:
+                raise UserError(_("Seleccione una categoría antes de generar la referencia."))
+            if product.default_code:
+                raise UserError(_(
+                    "La variante '%s' ya tiene la referencia interna '%s'.\n"
+                    "Límpiela primero si necesita generar una nueva.",
+                    product.display_name,
+                    product.default_code,
+                ))
+            product.default_code = product.categ_id._odoobo_next_product_reference()
+        return True

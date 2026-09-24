@@ -53,22 +53,18 @@
                         <field name="sd_autor_id" domain="[('sd_es_autor', '=', True)]" options="{'no_create': True}"/>
                         <field name="sd_cuenta_pro" readonly="1"/>
                         <field name="sd_cuenta_reg" readonly="1"/>
-                        <field name="sd_tax_pro_id" readonly="1" options="{'no_create': True}" invisible="not sd_tax_pro_id"/>
-                        <field name="sd_tax_reg_id" readonly="1" options="{'no_create': True}" invisible="not sd_tax_reg_id"/>
                     </group>
                     <group string="COE PRO / COE REG">
                         <field name="sd_coe_enabled"/>
                         <field name="sd_cuenta_coe" readonly="1"/>
                         <field name="sd_cuenta_coe_reg" readonly="1"/>
-                        <field name="sd_tax_coe_pro_id" readonly="1" options="{'no_create': True}" invisible="not sd_tax_coe_pro_id"/>
-                        <field name="sd_tax_coe_reg_id" readonly="1" options="{'no_create': True}" invisible="not sd_tax_coe_reg_id"/>
                     </group>
                     <group string="Cálculo">
                         <field name="sd_tipo_importe" invisible="not sd_pro_reg_enabled and not sd_coe_enabled"/>
                         <field name="sd_amount_impuesto" invisible="not sd_pro_reg_enabled and not sd_coe_enabled"/>
                         <button name="action_sd_sync_pro_reg_taxes"
                                 type="object"
-                                string="Generar / Actualizar impuestos Odoobo"
+                                string="Aplicar / Actualizar impuestos Odoobo"
                                 class="btn-primary"
                                 invisible="not sd_pro_reg_enabled and not sd_coe_enabled"/>
                     </group>

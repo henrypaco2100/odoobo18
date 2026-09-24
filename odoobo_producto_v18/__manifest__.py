@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Odoobo - Campos Producto Odoo 18",
-    "version": "18.0.1.2.0",
+    "version": "18.0.2.0.0",
     "category": "Sales/Products",
-    "summary": "Diez campos adicionales de producto con etiquetas configurables",
+    "summary": "Diez campos adicionales y secuencia independiente por categoría",
     "description": """
 ESI - Campos Adicionales de Producto para Odoo 18 Community.
 
@@ -13,6 +13,7 @@ ESI - Campos Adicionales de Producto para Odoo 18 Community.
 - Se pueden usar en búsquedas.
 - Los nombres mostrados de los diez campos son configurables por administradores.
 - Conserva los cinco campos originales y agrega los campos 6 al 10.
+- Secuencia independiente por categoría para generar la referencia interna mediante botón.
 - Sin dependencias de módulos de terceros.
     """,
     "author": "ESI Bolivia",
@@ -21,6 +22,7 @@ ESI - Campos Adicionales de Producto para Odoo 18 Community.
     "depends": ["product", "base_setup"],
     "data": [
         "views/product_views.xml",
+        "views/product_category_views.xml",
         "views/res_config_settings_views.xml",
     ],
     "installable": True,

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_category_form_odoobo_sequence_v18" model="ir.ui.view">
+        <field name="name">product.category.form.odoobo.sequence.v18</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='first']" position="after">
+                <group string="Secuencia de referencia interna" name="odoobo_category_sequence">
+                    <group>
+                        <field name="sd_secuencia_id" options="{'no_create': True}"/>
+                        <field name="sd_name_secuencia" invisible="not sd_secuencia_id"/>
+                        <field name="sd_prefijo_secuencia" invisible="not sd_secuencia_id" placeholder="Ej. LIB-"/>
+                    </group>
+                    <group>
+                        <field name="sd_siguiente" invisible="not sd_secuencia_id"/>
+                        <field name="sd_tam_secuencia" invisible="not sd_secuencia_id"/>
+                        <button name="action_odoobo_create_category_sequence"
+                                type="object"
+                                string="Crear secuencia"
+                                class="btn-primary"
+                                icon="fa-refresh"
+                                invisible="sd_secuencia_id"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_category_list_odoobo_sequence_v18" model="ir.ui.view">
+        <field name="name">product.category.list.odoobo.sequence.v18</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_list_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="inside">
+                <field name="sd_prefijo_secuencia" optional="hide"/>
+                <field name="sd_siguiente" optional="hide"/>
+                <field name="sd_tam_secuencia" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_form_odoobo_sequence_button_v18" model="ir.ui.view">
+        <field name="name">product.template.form.odoobo.sequence.button.v18</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="after">
+                <button name="action_obtener_siguiente_sequencia"
+                        type="object"
+                        string="Generar referencia"
+                        icon="fa-refresh"
+                        class="btn-secondary"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_product_form_odoobo_sequence_button_v18" model="ir.ui.view">
+        <field name="name">product.product.form.odoobo.sequence.button.v18</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="after">
+                <button name="action_obtener_siguiente_sequencia"
+                        type="object"
+                        string="Generar referencia"
+                        icon="fa-refresh"
+                        class="btn-secondary"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

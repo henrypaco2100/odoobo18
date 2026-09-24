@@ -48,12 +48,12 @@ class ProductTemplate(models.Model):
     sd_pro_reg_enabled = fields.Boolean(
         string="Aplicar PRO/REG",
         default=False,
-        help="Genera y asigna los impuestos dedicados PRO y REG del producto.",
+        help="Asigna los impuestos compartidos PRO y REG al producto.",
     )
     sd_coe_enabled = fields.Boolean(
         string="Aplicar COE PRO/REG",
         default=False,
-        help="Genera y asigna los impuestos dedicados COE PRO y COE REG del producto.",
+        help="Asigna los impuestos compartidos COE PRO y COE REG al producto.",
     )
     sd_tipo_importe = fields.Selection(
         selection=[
@@ -69,7 +69,14 @@ class ProductTemplate(models.Model):
     sd_amount_impuesto = fields.Float(
         string="Importe / Porcentaje",
         digits=(16, 4),
-        help="Valor usado por PRO/REG y COE PRO/REG, manteniendo la lógica del módulo v13.",
+        help="Importe del producto utilizado dinámicamente por los impuestos compartidos PRO/REG/COE.",
+    )
+    # Campo técnico numérico para que el motor de impuestos JS/POS pueda cargar
+    # el modo sin depender de un Selection no soportado por el helper base.
+    sd_tax_calc_mode = fields.Integer(
+        string="Modo cálculo Odoobo",
+        compute="_compute_sd_tax_calc_mode",
+        store=True,
     )
 
     sd_cuenta_pro = fields.Many2one("account.account", string="Cuenta PRO", compute="_compute_sd_author_accounts", readonly=True)
@@ -77,10 +84,11 @@ class ProductTemplate(models.Model):
     sd_cuenta_coe = fields.Many2one("account.account", string="Cuenta COE PRO", compute="_compute_sd_author_accounts", readonly=True)
     sd_cuenta_coe_reg = fields.Many2one("account.account", string="Cuenta COE REG", compute="_compute_sd_author_accounts", readonly=True)
 
-    sd_tax_pro_id = fields.Many2one("account.tax", string="Impuesto PRO generado", company_dependent=True, copy=False, readonly=True, ondelete="set null")
-    sd_tax_reg_id = fields.Many2one("account.tax", string="Impuesto REG generado", company_dependent=True, copy=False, readonly=True, ondelete="set null")
-    sd_tax_coe_pro_id = fields.Many2one("account.tax", string="Impuesto COE PRO generado", company_dependent=True, copy=False, readonly=True, ondelete="set null")
-    sd_tax_coe_reg_id = fields.Many2one("account.tax", string="Impuesto COE REG generado", company_dependent=True, copy=False, readonly=True, ondelete="set null")
+    @api.depends("sd_tipo_importe")
+    def _compute_sd_tax_calc_mode(self):
+        modes = {"fixed": 1, "percent": 2, "division": 3, "group": 0}
+        for product in self:
+            product.sd_tax_calc_mode = modes.get(product.sd_tipo_importe, 1)
 
     @api.depends("sd_autor_id")
     @api.depends_context("company")
@@ -133,7 +141,8 @@ class ProductTemplate(models.Model):
             self._sync_odoobo_taxes(validate=False)
         return res
 
-    # Código interno: en Odoo 18 name_get fue sustituido por display_name.
+    # Código interno editorial: sigue disponible, pero ya NO tiene secuencia en
+    # este módulo. La secuencia por categoría vive en odoobo_producto_v18.
     @api.depends("name", "default_code", "sd_codigo_interno")
     def _compute_display_name(self):
         super()._compute_display_name()
@@ -154,10 +163,6 @@ class ProductTemplate(models.Model):
         extras = self.search(extra_domain, limit=remaining)
         return result + [(record.id, record.display_name) for record in extras]
 
-    def action_sd_sync_pro_reg_taxes(self):
-        self._sync_odoobo_taxes(validate=True)
-        return True
-
     def _odoobo_get_tax_group(self, company):
         country = company.account_fiscal_country_id or company.country_id
         if not country:
@@ -176,18 +181,20 @@ class ProductTemplate(models.Model):
             })
         return group
 
-    def _odoobo_prepare_tax_vals(self, company, group, kind, amount):
-        self.ensure_one()
+    @api.model
+    def _odoobo_shared_tax_vals(self, company, kind, group):
         country = company.account_fiscal_country_id or company.country_id
         labels = {"pro": "PRO", "reg": "REG", "coe_pro": "COE PRO", "coe_reg": "COE REG"}
         sequences = {"pro": 90, "reg": 91, "coe_pro": 92, "coe_reg": 93}
         label = labels[kind]
         return {
-            "name": f"{label} | {self.display_name} | #{self.id}",
+            "name": label,
             "invoice_label": label,
             "type_tax_use": "sale",
-            "amount_type": self.sd_tipo_importe,
-            "amount": amount,
+            # Un único impuesto compartido. El importe real se calcula con el
+            # producto en account.tax._eval_tax_amount_fixed_amount.
+            "amount_type": "fixed",
+            "amount": 0.0,
             "sequence": sequences[kind],
             "company_id": company.id,
             "country_id": country.id,
@@ -196,47 +203,38 @@ class ProductTemplate(models.Model):
             "include_base_amount": False,
             "is_base_affected": False,
             "sd_tipo_pro_reg": kind,
-            "sd_product_tmpl_id": self.id,
+            "sd_product_tmpl_id": False,
         }
 
-    def _odoobo_configure_tax_account(self, tax, account):
-        tax.invoice_repartition_line_ids.filtered(lambda line: line.repartition_type == "tax").write({"account_id": account.id})
-        tax.refund_repartition_line_ids.filtered(lambda line: line.repartition_type == "tax").write({"account_id": account.id})
-
-    def _odoobo_ensure_tax(self, company, kind, amount, account, group):
-        self.ensure_one()
-        field_by_kind = {
-            "pro": "sd_tax_pro_id",
-            "reg": "sd_tax_reg_id",
-            "coe_pro": "sd_tax_coe_pro_id",
-            "coe_reg": "sd_tax_coe_reg_id",
-        }
-        product = self.with_company(company)
-        tax_field = field_by_kind[kind]
-        tax = product[tax_field]
-        Tax = self.env["account.tax"].with_company(company)
-        vals = product._odoobo_prepare_tax_vals(company, group, kind, amount)
-        if tax and tax.exists() and tax.company_id == company:
+    @api.model
+    def _odoobo_get_shared_tax(self, company, kind):
+        Tax = self.env["account.tax"].with_company(company).sudo()
+        tax = Tax.search([
+            ("company_id", "=", company.id),
+            ("sd_tipo_pro_reg", "=", kind),
+            ("sd_product_tmpl_id", "=", False),
+        ], limit=1)
+        group = self._odoobo_get_tax_group(company)
+        vals = self._odoobo_shared_tax_vals(company, kind, group)
+        if tax:
+            # No se modifica el importe por producto; siempre queda en 0 y el
+            # motor dinámico toma el valor del producto de cada línea.
             tax.write(vals)
-        else:
-            tax = Tax.create(vals)
-            product.with_context(odoobo_skip_tax_sync=True).write({tax_field: tax.id})
-        product._odoobo_configure_tax_account(tax, account)
-        return tax
+            return tax
 
-    def _odoobo_unlink_generated(self, kinds):
-        self.ensure_one()
-        field_by_kind = {
-            "pro": "sd_tax_pro_id", "reg": "sd_tax_reg_id",
-            "coe_pro": "sd_tax_coe_pro_id", "coe_reg": "sd_tax_coe_reg_id",
-        }
-        generated = self.env["account.tax"]
-        for kind in kinds:
-            generated |= self[field_by_kind[kind]]
-        if generated:
-            commands = [Command.unlink(tax.id) for tax in generated if tax in self.taxes_id]
-            if commands:
-                self.with_context(odoobo_skip_tax_sync=True).write({"taxes_id": commands})
+        # Compatibilidad: si ya existía un impuesto manual PRO/REG sin marcar,
+        # se reutiliza en lugar de crear un duplicado.
+        label = vals["name"]
+        candidate = Tax.search([
+            ("company_id", "=", company.id),
+            ("name", "=", label),
+            ("type_tax_use", "=", "sale"),
+            ("sd_product_tmpl_id", "=", False),
+        ], limit=1)
+        if candidate:
+            candidate.write(vals)
+            return candidate
+        return Tax.create(vals)
 
     def _odoobo_validate_pair(self, label, accounts, validate):
         self.ensure_one()
@@ -255,32 +253,33 @@ class ProductTemplate(models.Model):
             elif self.env.company not in account.company_ids:
                 errors.append(_("La cuenta %s no pertenece a la compañía activa.", account_label))
         if errors and validate:
-            raise UserError(_("No se puede generar %s para '%s':\n- %s", label, self.display_name, "\n- ".join(errors)))
+            raise UserError(_("No se puede configurar %s para '%s':\n- %s", label, self.display_name, "\n- ".join(errors)))
         return not errors
+
+    def _odoobo_remove_kind_taxes(self, kinds):
+        self.ensure_one()
+        to_unlink = self.taxes_id.filtered(lambda t: t.sd_tipo_pro_reg in kinds)
+        if to_unlink:
+            self.with_context(odoobo_skip_tax_sync=True).write({
+                "taxes_id": [Command.unlink(tax.id) for tax in to_unlink],
+            })
 
     def _odoobo_sync_pair(self, enabled, kinds, accounts, validate=False):
         self.ensure_one()
+        # Elimina cualquier impuesto PRO/REG/COE antiguo (incluyendo los
+        # impuestos por producto de versiones anteriores) antes de asignar los
+        # compartidos.
+        self._odoobo_remove_kind_taxes(kinds)
         if not enabled:
-            self._odoobo_unlink_generated(kinds)
             return
         if not self._odoobo_validate_pair(" / ".join(kinds).upper(), accounts, validate):
-            self._odoobo_unlink_generated(kinds)
             return
-        group = self._odoobo_get_tax_group(self.env.company)
-        amount = abs(self.sd_amount_impuesto)
-        account_map = {label: account for account, label in accounts}
-        specs = []
-        if kinds == ("pro", "reg"):
-            specs = [("pro", amount, account_map["PRO"]), ("reg", -amount, account_map["REG"])]
-        else:
-            specs = [("coe_pro", amount, account_map["COE PRO"]), ("coe_reg", -amount, account_map["COE REG"])]
-        taxes_to_link = self.env["account.tax"]
-        for kind, tax_amount, account in specs:
-            taxes_to_link |= self._odoobo_ensure_tax(self.env.company, kind, tax_amount, account, group)
-        missing = taxes_to_link - self.taxes_id
-        if missing:
+        shared = self.env["account.tax"]
+        for kind in kinds:
+            shared |= self._odoobo_get_shared_tax(self.env.company, kind)
+        if shared:
             self.with_context(odoobo_skip_tax_sync=True).write({
-                "taxes_id": [Command.link(tax.id) for tax in missing],
+                "taxes_id": [Command.link(tax.id) for tax in shared],
             })
 
     def _sync_odoobo_taxes(self, validate=False):
@@ -298,6 +297,37 @@ class ProductTemplate(models.Model):
                 ((product.sd_cuenta_coe, "COE PRO"), (product.sd_cuenta_coe_reg, "COE REG")),
                 validate=validate,
             )
+        return True
+
+    def action_sd_sync_pro_reg_taxes(self):
+        self._sync_odoobo_taxes(validate=True)
+        return True
+
+    @api.model
+    def _odoobo_migrate_legacy_product_taxes(self):
+        """Actualización v5: sustituye impuestos por-producto por impuestos compartidos.
+
+        Los impuestos históricos se archivan (no se borran) para no afectar
+        asientos ya contabilizados.
+        """
+        Tax = self.env["account.tax"].sudo()
+        legacy = Tax.search([
+            ("sd_tipo_pro_reg", "!=", False),
+            ("sd_product_tmpl_id", "!=", False),
+        ])
+        affected = self.browse(legacy.mapped("sd_product_tmpl_id").ids)
+        # También toma productos que todavía tengan impuestos legados enlazados.
+        if legacy:
+            affected |= self.search([("taxes_id", "in", legacy.ids)])
+        for product in affected:
+            legacy_on_product = product.taxes_id & legacy
+            if legacy_on_product:
+                product.with_context(odoobo_skip_tax_sync=True).write({
+                    "taxes_id": [Command.unlink(tax.id) for tax in legacy_on_product],
+                })
+            product._sync_odoobo_taxes(validate=False)
+        if legacy:
+            legacy.write({"active": False})
         return True
 
 
