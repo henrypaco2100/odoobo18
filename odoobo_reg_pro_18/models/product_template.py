@@ -84,6 +84,28 @@ class ProductTemplate(models.Model):
     sd_cuenta_coe = fields.Many2one("account.account", string="Cuenta COE PRO", compute="_compute_sd_author_accounts", readonly=True)
     sd_cuenta_coe_reg = fields.Many2one("account.account", string="Cuenta COE REG", compute="_compute_sd_author_accounts", readonly=True)
 
+    # Compatibilidad de actualización desde las versiones v18 anteriores.
+    # Estos campos existían en las vistas/módulos v1-v4. Se conservan para que
+    # Odoo pueda validar las vistas antiguas que ya están guardadas en la BD
+    # ANTES de que el XML de esta versión las reemplace durante -u.
+    # En la lógica actual apuntan a los impuestos COMPARTIDOS PRO/REG/COE.
+    sd_tax_pro_id = fields.Many2one(
+        "account.tax", string="Impuesto PRO", company_dependent=True,
+        copy=False, readonly=True, ondelete="set null",
+    )
+    sd_tax_reg_id = fields.Many2one(
+        "account.tax", string="Impuesto REG", company_dependent=True,
+        copy=False, readonly=True, ondelete="set null",
+    )
+    sd_tax_coe_pro_id = fields.Many2one(
+        "account.tax", string="Impuesto COE PRO", company_dependent=True,
+        copy=False, readonly=True, ondelete="set null",
+    )
+    sd_tax_coe_reg_id = fields.Many2one(
+        "account.tax", string="Impuesto COE REG", company_dependent=True,
+        copy=False, readonly=True, ondelete="set null",
+    )
+
     @api.depends("sd_tipo_importe")
     def _compute_sd_tax_calc_mode(self):
         modes = {"fixed": 1, "percent": 2, "division": 3, "group": 0}
@@ -297,6 +319,27 @@ class ProductTemplate(models.Model):
                 ((product.sd_cuenta_coe, "COE PRO"), (product.sd_cuenta_coe_reg, "COE REG")),
                 validate=validate,
             )
+
+            # Mantiene los campos técnicos de compatibilidad apuntando a los
+            # impuestos compartidos. Esto evita referencias obsoletas de las
+            # versiones que creaban un impuesto por producto.
+            compat_vals = {
+                "sd_tax_pro_id": False,
+                "sd_tax_reg_id": False,
+                "sd_tax_coe_pro_id": False,
+                "sd_tax_coe_reg_id": False,
+            }
+            if product.sd_pro_reg_enabled:
+                compat_vals.update({
+                    "sd_tax_pro_id": product._odoobo_get_shared_tax(self.env.company, "pro").id,
+                    "sd_tax_reg_id": product._odoobo_get_shared_tax(self.env.company, "reg").id,
+                })
+            if product.sd_coe_enabled:
+                compat_vals.update({
+                    "sd_tax_coe_pro_id": product._odoobo_get_shared_tax(self.env.company, "coe_pro").id,
+                    "sd_tax_coe_reg_id": product._odoobo_get_shared_tax(self.env.company, "coe_reg").id,
+                })
+            product.with_context(odoobo_skip_tax_sync=True).write(compat_vals)
         return True
 
     def action_sd_sync_pro_reg_taxes(self):
