@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Odoobo PRO / REG / COE + Editorial",
-    "version": "18.0.6.0.0",
+    "version": "18.0.7.0.0",
     "summary": "PRO/REG/COE compartidos, compatibilidad de actualización, datos editoriales y kardex por autor",
     "description": """
 Odoobo para Odoo 18, extraído del antiguo sd_plural_v13 y limitado a las

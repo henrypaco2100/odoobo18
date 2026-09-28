@@ -49,7 +49,18 @@ class StockReportByAuthor(models.TransientModel):
             domain.append(("product_id.product_tmpl_id.sd_autor_id", "in", self.autor_id.ids))
         if self.product_id:
             domain.append(("product_id", "in", self.product_id.ids))
-        return self.env["account.move.line"].search(domain, order="move_id.invoice_date, id")
+        # En Odoo 18, el parámetro order de search() no acepta rutas
+        # relacionales como move_id.invoice_date en account.move.line.
+        # El dominio sí puede filtrar por invoice_date; para conservar el orden
+        # cronológico del informe, primero usamos un ORDER BY válido y luego
+        # ordenamos el recordset por la fecha de factura en Python.
+        lines = self.env["account.move.line"].search(domain, order="date, id")
+        return lines.sorted(
+            key=lambda line: (
+                line.move_id.invoice_date or line.date or fields.Date.today(),
+                line.id,
+            )
+        )
 
     def _get_report_rows(self):
         self.ensure_one()

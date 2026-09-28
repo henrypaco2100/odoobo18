@@ -27,3 +27,7 @@ En la categoría se configura el prefijo y la cantidad de dígitos y se usa el b
 "Crear / Actualizar secuencia". En el producto, dentro de Datos Editoriales, el botón
 "Generar código" toma el siguiente correlativo de la categoría y lo guarda en
 sd_codigo_interno. El botón no sobreescribe códigos ya existentes.
+
+## 18.0.7.0.0
+- Corregido el Excel `stock_report_by_author` para Odoo 18.
+- El filtro por fecha sigue usando `move_id.invoice_date`, pero el orden se resuelve de forma compatible con Odoo 18.
